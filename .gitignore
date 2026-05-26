@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.so
+.env
+wandb/
+outputs/
+*.parquet
+data/*.jsonl
+.DS_Store
+*.log
