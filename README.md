@@ -2,6 +2,8 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.25964-b31b1b.svg)](https://arxiv.org/abs/2605.25964)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-LECTOR--4B-yellow)](https://huggingface.co/Xiao-Youth/LECTOR-4B)
+[![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-NC__Physics-yellow)](https://huggingface.co/datasets/Xiao-Youth/NC_Physics)
 
 This repository contains the official implementation of **LECTOR**, a framework that jointly optimizes reasoning logic graph extraction and scientific introduction writing through co-reinforcement learning.
 
@@ -50,18 +52,40 @@ Key dependencies:
 
 See `requirements.txt` for the full list.
 
+## Released Artifacts
+
+- Model checkpoint: [Xiao-Youth/LECTOR-4B](https://huggingface.co/Xiao-Youth/LECTOR-4B)
+- Dataset: [Xiao-Youth/NC_Physics](https://huggingface.co/datasets/Xiao-Youth/NC_Physics)
+
+Download the released LECTOR-4B checkpoint:
+
+```bash
+hf download Xiao-Youth/LECTOR-4B \
+    --local-dir ckpts/LECTOR-4B
+```
+
+The checkpoint follows the standard Hugging Face Transformers format and is based on `Qwen/Qwen3-4B-Instruct`.
+
 ## Data Preparation
 
 ### 1. Download Dataset
 
-Download the NC_Physics dataset and place it in `./data/`:
-<!-- TODO: Add dataset download link -->
+Download the NC_Physics dataset from Hugging Face and place it in `./data/`:
+
+```bash
+hf download Xiao-Youth/NC_Physics \
+    --repo-type dataset \
+    --local-dir data \
+    --include "NC_Physics_*.jsonl"
+```
 
 ```
 data/
-├── NC_Physics_train.jsonl
+├── NC_Physics_trainval.jsonl
 └── NC_Physics_test.jsonl
 ```
+
+`NC_Physics_trainval.jsonl` contains 11,341 examples. The default preprocessing below uses 10,000 examples for training and 100 examples for validation. `NC_Physics_test.jsonl` contains 100 test examples.
 
 ### 2. Preprocess Data
 
@@ -101,10 +125,10 @@ Key configurable parameters in `scripts/run_training.sh`:
 
 ### 1. Start Model Server
 
-Deploy your trained model using vLLM:
+Deploy your trained model or the released [LECTOR-4B](https://huggingface.co/Xiao-Youth/LECTOR-4B) checkpoint using vLLM:
 ```bash
 python -m vllm.entrypoints.openai.api_server \
-    --model /path/to/checkpoint \
+    --model ckpts/LECTOR-4B \
     --port 8000
 ```
 
@@ -112,7 +136,7 @@ python -m vllm.entrypoints.openai.api_server \
 
 ```bash
 bash scripts/run_evaluation.sh \
-    --model /path/to/checkpoint \
+    --model ckpts/LECTOR-4B \
     --base_url http://127.0.0.1:8000/v1 \
     --data_file ./data/NC_Physics_test.jsonl
 ```
